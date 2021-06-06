@@ -8,7 +8,7 @@ All examples and information were taken from [Microsoft documentation](https://d
 | Sorting        | [OrderBy](#orderby), [OrderByDescending](#orderbydescending), [ThenBy](#thenby), [ThenByDescending](#thenbydescending), [Reverse](#reverse) |
 | Grouping       | [GroupBy](#groupby), [ToLookup](#tolookup)                                                                                                  |
 | Join           | [Join](#join), [GroupJoin](#groupjoin)                                                                                                      |
-| Projection     | Select, SelectMany                                                                                                                          |
+| Projection     | [Select](#select), [SelectMany](#selectmany)                                                                                                                   |
 | Aggregation    | [Aggregate](#aggregate), Averange, Count, LongCount, Max, Min, Sum                                                                          |
 | Quantifiers    | All, Any, Contains                                                                                                                          |
 | Elements       | ElementAt, ElementAtOrDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault                                          |
@@ -835,6 +835,89 @@ foreach (var item in groupJoin)
     Standard 3:
 */
 ```
+
+## Select
+
+Projects each element of a sequence into a new form.
+
+```csharp
+string[] fruits = { "apple", "banana", "mango", "orange",
+                      "passionfruit", "grape" };
+
+var query =
+    fruits.Select((fruit, index) =>
+                      new { index, str = fruit.Substring(0, index) });
+
+foreach (var obj in query)
+{
+    Console.WriteLine("{0}", obj);
+}
+
+/*
+ This code produces the following output:
+
+ {index=0, str=}
+ {index=1, str=b}
+ {index=2, str=ma}
+ {index=3, str=ora}
+ {index=4, str=pass}
+ {index=5, str=grape}
+*/
+
+```
+
+## SelectMany
+
+Projects each element of a sequence to an IEnumerable<T> and flattens the resulting sequences into one sequence.
+    
+```csharp
+class PetOwner
+{
+    public string Name { get; set; }
+    public List<string> Pets { get; set; }
+}
+
+public static void SelectManyEx3()
+{
+    PetOwner[] petOwners =
+        { new PetOwner { Name="Higa",
+              Pets = new List<string>{ "Scruffy", "Sam" } },
+          new PetOwner { Name="Ashkenazi",
+              Pets = new List<string>{ "Walker", "Sugar" } },
+          new PetOwner { Name="Price",
+              Pets = new List<string>{ "Scratches", "Diesel" } },
+          new PetOwner { Name="Hines",
+              Pets = new List<string>{ "Dusty" } } };
+
+    // Project the pet owner's name and the pet's name.
+    var query =
+        petOwners
+        .SelectMany(petOwner => petOwner.Pets, (petOwner, petName) => new { petOwner, petName })
+        .Where(ownerAndPet => ownerAndPet.petName.StartsWith("S"))
+        .Select(ownerAndPet =>
+                new
+                {
+                    Owner = ownerAndPet.petOwner.Name,
+                    Pet = ownerAndPet.petName
+                }
+        );
+
+    // Print the results.
+    foreach (var obj in query)
+    {
+        Console.WriteLine(obj);
+    }
+}
+
+// This code produces the following output:
+//
+// {Owner=Higa, Pet=Scruffy}
+// {Owner=Higa, Pet=Sam}
+// {Owner=Ashkenazi, Pet=Sugar}
+// {Owner=Price, Pet=Scratches}
+```
+
+
 ## _`Aggregate`_
 
 Applies an accumulator function over a sequence. The specified seed value is used as the initial accumulator value, and the specified function is used to select the result value.
