@@ -9,7 +9,7 @@ All examples and information were taken from [Microsoft documentation](https://d
 | Grouping       | [GroupBy](#groupby), [ToLookup](#tolookup)                                                                                                  |
 | Join           | [Join](#join), [GroupJoin](#groupjoin)                                                                                                      |
 | Projection     | [Select](#select), [SelectMany](#selectmany)                                                                                                |
-| Aggregation    | [Aggregate](#aggregate), Averange, Count, LongCount, Max, Min, Sum                                                                          |
+| Aggregation    | [Aggregate](#aggregate), [Averange](#averange), [Count](#count-and-longcount), [LongCount](#count-and-longcount), [Max](#max-and-min), [Min](#max-and-min), [Sum](#sum)                                                                         |
 | Quantifiers    | [All](#all), [Any](#any), [Contains](#contains)                                                                                             |
 | Elements       | ElementAt, ElementAtOrDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault                                          |
 | Set            | Distinct, Except, Intersect, Union                                                                                                          |
@@ -976,6 +976,118 @@ Console.WriteLine(reversed);
 // dog lazy the over jumps fox brown quick the
 ```
 
+## _`Averange`_
+
+Average extension method calculates the average of the numeric items in the collection. Average method returns nullable or non-nullable decimal, double or float value.
+
+```csharp
+IList<Student> studentList = new List<Student>>() {
+        new Student() { StudentID = 1, StudentName = "John", Age = 13} ,
+        new Student() { StudentID = 2, StudentName = "Moin",  Age = 21 } ,
+        new Student() { StudentID = 3, StudentName = "Bill",  Age = 18 } ,
+        new Student() { StudentID = 4, StudentName = "Ram" , Age = 20} ,
+        new Student() { StudentID = 5, StudentName = "Ron" , Age = 15 }
+    };
+
+var avgAge = studentList.Average(s => s.Age);
+
+Console.WriteLine("Average Age of Student: {0}", avgAge);
+
+//Average Age of Student: 17.4
+```
+
+Or using nullable values:
+
+```csharp
+long?[] longs = { null, 10007L, 37L, 399846234235L };
+
+double? average = longs.Average();
+
+Console.WriteLine("The average is {0}.", average);
+
+// This code produces the following output:
+//
+// The average is 133282081426.333.
+```
+
+## _`Count`_ and _`LongCount`_
+
+Returns the number of elements in a sequence. _`LongCount`_ returns an _`Int64`_ that represents the number of elements in a sequence. Use it when you expect the result to be greater than _`MaxValue`_.
+
+```csharp
+string[] fruits = { "apple", "banana", "mango", "orange", "passionfruit", "grape" };
+
+try
+{
+    int numberOfFruits = fruits.Count();
+    Console.WriteLine(
+        "There are {0} fruits in the collection.",
+        numberOfFruits);
+}
+catch (OverflowException)
+{
+    Console.WriteLine("The count is too large to store as an Int32.");
+    Console.WriteLine("Try using the LongCount() method instead.");
+}
+
+// This code produces the following output:
+//
+// There are 6 fruits in the collection.
+```
+
+## _`Max`_ and _`Min`_
+
+The Max() method returns the largest numeric element from a collection. Another hand Min() method returns the minimum value in a sequence of values.
+
+Example of Max():
+
+```csharp
+double?[] doubles = { null, 1.5E+104, 9E+103, -2E+103 };
+
+double? max = doubles.Max();
+
+Console.WriteLine("The largest number is {0}.", max);
+
+/*
+ This code produces the following output:
+
+ The largest number is 1.5E+104.
+*/
+```
+
+Example of Min()
+
+```csharp
+int?[] grades = { 78, 92, null, 99, 37, 81 };
+
+int? min = grades.Min();
+
+Console.WriteLine("The lowest grade is {0}.", min);
+
+/*
+ This code produces the following output:
+
+ The lowest grade is 37.
+*/
+```
+
+## Sum
+
+Compues the sum of a sequence of numeric values.
+
+```csharp
+float?[] points = { null, 0, 92.83F, null, 100.0F, 37.46F, 81.1F };
+
+float? sum = points.Sum();
+
+Console.WriteLine("Total points earned: {0}", sum);
+
+/*
+ This code produces the following output:
+
+ Total points earned: 311.39
+*/
+```
 ## All
 
 Checks if all the elements in a sequence satisfies the specified condition
@@ -1013,8 +1125,6 @@ bool isAnyStudentTeenAger = studentList.Any(s => s.age > 12 && s.age < 20);
 The Contains operator checks whether a specified element exists in the collection or not and returns a boolean.
 
 ```csharp
-string[] fruits = { "apple", "banana", "mango", "orange", "passionfruit", "grape" };
-
 string fruit = "mango";
 
 bool hasMango = fruits.Contains(fruit);
@@ -1093,5 +1203,4 @@ Using IEqualityComparer interface
     Apple? True
     Kiwi? False
 */
-
 ```
