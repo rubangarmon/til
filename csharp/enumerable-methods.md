@@ -8,9 +8,9 @@ All examples and information were taken from [Microsoft documentation](https://d
 | Sorting        | [OrderBy](#orderby), [OrderByDescending](#orderbydescending), [ThenBy](#thenby), [ThenByDescending](#thenbydescending), [Reverse](#reverse) |
 | Grouping       | [GroupBy](#groupby), [ToLookup](#tolookup)                                                                                                  |
 | Join           | [Join](#join), [GroupJoin](#groupjoin)                                                                                                      |
-| Projection     | [Select](#select), [SelectMany](#selectmany)                                                                                                                   |
+| Projection     | [Select](#select), [SelectMany](#selectmany)                                                                                                |
 | Aggregation    | [Aggregate](#aggregate), Averange, Count, LongCount, Max, Min, Sum                                                                          |
-| Quantifiers    | All, Any, Contains                                                                                                                          |
+| Quantifiers    | [All](#all), [Any](#any), [Contains](#contains)                                                                                             |
 | Elements       | ElementAt, ElementAtOrDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault                                          |
 | Set            | Distinct, Except, Intersect, Union                                                                                                          |
 | Partitioning   | Skip, SkipWhile, Take, TakeWhile                                                                                                            |
@@ -714,6 +714,7 @@ foreach (var item in groupJoin)
 ```
 
 Another example:
+
 ```csharp
 class Person
 {
@@ -869,7 +870,7 @@ foreach (var obj in query)
 ## SelectMany
 
 Projects each element of a sequence to an IEnumerable<T> and flattens the resulting sequences into one sequence.
-    
+
 ```csharp
 class PetOwner
 {
@@ -916,7 +917,6 @@ public static void SelectManyEx3()
 // {Owner=Ashkenazi, Pet=Sugar}
 // {Owner=Price, Pet=Scratches}
 ```
-
 
 ## _`Aggregate`_
 
@@ -974,4 +974,124 @@ Console.WriteLine(reversed);
 // This code produces the following output:
 //
 // dog lazy the over jumps fox brown quick the
+```
+
+## All
+
+Checks if all the elements in a sequence satisfies the specified condition
+
+```csharp
+IList<Student> studentList = new List<Student>() {
+        new Student() { StudentID = 1, StudentName = "John", Age = 18 } ,
+        new Student() { StudentID = 2, StudentName = "Steve",  Age = 15 } ,
+        new Student() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+        new Student() { StudentID = 4, StudentName = "Ram" , Age = 20 } ,
+        new Student() { StudentID = 5, StudentName = "Ron" , Age = 19 }
+    };
+
+// checks whether all the students are teenagers
+bool areAllStudentsTeenAger = studentList.All(s => s.Age > 12 && s.Age < 20);
+
+Console.WriteLine(areAllStudentsTeenAger);
+
+// output
+// false
+
+```
+
+## Any
+
+Checks if any of the elements in a sequence satisfies the specified condition
+
+```csharp
+bool isAnyStudentTeenAger = studentList.Any(s => s.age > 12 && s.age < 20);
+// true
+```
+
+## Contains
+
+The Contains operator checks whether a specified element exists in the collection or not and returns a boolean.
+
+```csharp
+string[] fruits = { "apple", "banana", "mango", "orange", "passionfruit", "grape" };
+
+string fruit = "mango";
+
+bool hasMango = fruits.Contains(fruit);
+
+Console.WriteLine(
+    "The array {0} contain '{1}'.",
+    hasMango ? "does" : "does not",
+    fruit);
+
+// This code produces the following output:
+//
+// The array does contain 'mango'.
+```
+
+Using IEqualityComparer interface
+
+```csharp
+    public class Product
+    {
+        public string Name { get; set; }
+        public int Code { get; set; }
+    }
+
+    public class ProductComparer : IEqualityComparer<Product>
+    {
+        public bool Equals(Product x, Product y)
+        {
+            // Check whether the compared objects reference the same data
+            if (Object.ReferenceEquals(x, y)) return true;
+
+            // Check whether any of the compared objects is null
+            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+                return false;
+
+            //Check whether the products' properties are equal
+            return x.Code == y.Code && x.Name == y.Name;
+
+        }
+
+        //If Equals() returns true for a pair of objects
+        //then GetHasCode() must return the same value for these objects.
+        public int GetHashCode(Product obj)
+        {
+            //Check whether the object is null
+            if (Object.ReferenceEquals(obj, null)) return 0;
+
+            //Get hash code for the Name field if it is not null
+            int hashProductName = obj.Name == null ? 0 : obj.GetHashCode();
+
+            //Get hash code for the code field
+            int hashProductCode = obj.Code.GetHashCode();
+
+            //Calculate the hash code for the product.
+            return hashProductName ^ hashProductCode;
+        }
+
+    }
+
+    /////////////////////////
+
+    Product[] fruits = {new Product { Code = 9, Name = "apple"},
+                new Product { Code = 10, Name = "orange"},
+    new Product { Code = 12, Name = "lemon"}};
+
+
+    var apple = new Product { Name = "apple", Code = 9 };
+    var kiwi = new Product { Name = "kiwi", Code = 20 };
+
+    ProductComparer productComparer = new ProductComparer();
+
+    bool hasApple = fruits.Contains(apple);
+
+    /*
+    This code produces the following output:
+
+    Apple? True
+    Kiwi? False
+*/
+
 ```
