@@ -2,22 +2,22 @@
 
 All examples and information were taken from [Microsoft documentation](https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable?view=net-5.0) and [TutorialsTeacher](https://www.tutorialsteacher.com/linq/linq-standard-query-operators)
 
-| Classification | Standard Query Operators                                                                                                                    |
-| :------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| Filtering      | [Where](#where), [OfType](#oftype)                                                                                                          |
-| Sorting        | [OrderBy](#orderby), [OrderByDescending](#orderbydescending), [ThenBy](#thenby), [ThenByDescending](#thenbydescending), [Reverse](#reverse) |
-| Grouping       | [GroupBy](#groupby), [ToLookup](#tolookup)                                                                                                  |
-| Join           | [Join](#join), [GroupJoin](#groupjoin)                                                                                                      |
-| Projection     | [Select](#select), [SelectMany](#selectmany)                                                                                                |
-| Aggregation    | [Aggregate](#aggregate), [Averange](#averange), [Count](#count-and-longcount), [LongCount](#count-and-longcount), [Max](#max-and-min), [Min](#max-and-min), [Sum](#sum)                                                                         |
-| Quantifiers    | [All](#all), [Any](#any), [Contains](#contains)                                                                                             |
-| Elements       | ElementAt, ElementAtOrDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault                                          |
-| Set            | Distinct, Except, Intersect, Union                                                                                                          |
-| Partitioning   | Skip, SkipWhile, Take, TakeWhile                                                                                                            |
-| Concatenation  | Contact, Zip                                                                                                                                |
-| Equality       | SequenceEqual                                                                                                                               |
-| Generation     | DefaultEmpty, Empty, Range, Repeat                                                                                                          |
-| Conversion     | AsEnumerable, AsQueryable, Cast, ToArray, ToDictionary, ToList                                                                              |
+| Classification | Standard Query Operators                                                                                                                                                |
+| :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Filtering      | [Where](#where), [OfType](#oftype)                                                                                                                                      |
+| Sorting        | [OrderBy](#orderby), [OrderByDescending](#orderbydescending), [ThenBy](#thenby), [ThenByDescending](#thenbydescending), [Reverse](#reverse)                             |
+| Grouping       | [GroupBy](#groupby), [ToLookup](#tolookup)                                                                                                                              |
+| Join           | [Join](#join), [GroupJoin](#groupjoin)                                                                                                                                  |
+| Projection     | [Select](#select), [SelectMany](#selectmany)                                                                                                                            |
+| Aggregation    | [Aggregate](#aggregate), [Averange](#averange), [Count](#count-and-longcount), [LongCount](#count-and-longcount), [Max](#max-and-min), [Min](#max-and-min), [Sum](#sum) |
+| Quantifiers    | [All](#all), [Any](#any), [Contains](#contains)                                                                                                                         |
+| Elements       | ElementAt, ElementAtOrDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault                                                                      |
+| Set            | Distinct, Except, Intersect, Union                                                                                                                                      |
+| Partitioning   | Skip, SkipWhile, Take, TakeWhile                                                                                                                                        |
+| Concatenation  | Contact, Zip                                                                                                                                                            |
+| Equality       | SequenceEqual                                                                                                                                                           |
+| Generation     | DefaultEmpty, Empty, Range, Repeat                                                                                                                                      |
+| Conversion     | AsEnumerable, AsQueryable, Cast, ToArray, ToDictionary, ToList                                                                                                          |
 
 ## Where
 
@@ -1088,6 +1088,7 @@ Console.WriteLine("Total points earned: {0}", sum);
  Total points earned: 311.39
 */
 ```
+
 ## All
 
 Checks if all the elements in a sequence satisfies the specified condition
@@ -1202,5 +1203,133 @@ Using IEqualityComparer interface
 
     Apple? True
     Kiwi? False
+*/
+```
+
+## ElementAt
+
+Returns the element at a specified index in a sequence.
+
+```csharp
+string[] names = {"Hartono, Tommy", "Adams, Terry", "Andersen, Henriette Thaulow", "Hedlund, Magnus", "Ito, Shu"};
+Random random = new Random(DateTime.Now.Millisecond);
+
+string name = names.ElementAt(random.Next(0, names.length));
+Console.WriteLine("The name chosen at random is '{0}.'", name);
+/*
+    This code produces output similar to the following:
+    The name chosen at random is 'Ito, Shu'.
+*/
+```
+
+## ElementAtOrDeafult
+
+Returns the element at a specified index in a sequence or a default value if the index is out of range.
+
+```csharp
+string[] names = { "Hartono, Tommy", "Adams, Terry", "Andersen, Henriette Thaulow",
+        "Hedlund, Magnus", "Ito, Shu" };
+int index = 20;
+string name = names.ElementAtOrDefault(index);
+
+Console.WriteLine(
+    "The name chosen at index {0} is {1}",
+    index,
+    String.IsNullOrEmpty(name) ? "<no name at this index>" : name
+);
+/*
+    This code produces the following output:
+    The name chosen at index 20 is '<no name at this index>' .
+*/
+```
+
+
+## Distinct
+
+The Distinct extension method returns a new collection of unique elements from the given collection.
+
+```csharp
+var strList = new List<string>(){ "One", "Two", "Three", "Two", "Three" };
+var intList = new List<int>(){ 1, 2, 3, 2, 4, 4, 3, 5 };
+
+var distinctList1 = strList.Distinct();
+foreach(var str in distinctList1)
+    Console.WriteLine(str);
+
+var distinctList2 = intList.Distinct();
+foreach(var i in distinctList2)
+    Console.WriteLine(i);
+
+/*
+One
+Two
+Three
+1
+2
+3
+4
+5
+*/    
+```
+
+
+Using IEquatable interface
+
+```csharp
+public class Product : IEquatable<Product>
+{
+    public string Name { get; set; }
+    public int Code { get; set; }
+
+    public bool Equals(Product other)
+    {
+
+        //Check whether the compared object is null.
+        if (Object.ReferenceEquals(other, null)) return false;
+
+        //Check whether the compared object references the same data.
+        if (Object.ReferenceEquals(this, other)) return true;
+
+        //Check whether the products' properties are equal.
+        return Code.Equals(other.Code) && Name.Equals(other.Name);
+    }
+
+    // If Equals() returns true for a pair of objects
+    // then GetHashCode() must return the same value for these objects.
+
+    public override int GetHashCode()
+    {
+
+        //Get hash code for the Name field if it is not null.
+        int hashProductName = Name == null ? 0 : Name.GetHashCode();
+
+        //Get hash code for the Code field.
+        int hashProductCode = Code.GetHashCode();
+
+        //Calculate the hash code for the product.
+        return hashProductName ^ hashProductCode;
+    }
+}
+
+/////
+
+Product[] products = { new Product { Name = "apple", Code = 9 },
+                       new Product { Name = "orange", Code = 4 },
+                       new Product { Name = "apple", Code = 9 },
+                       new Product { Name = "lemon", Code = 12 } };
+
+//Exclude duplicates.
+
+IEnumerable<Product> noduplicates =
+    products.Distinct();
+
+foreach (var product in noduplicates)
+    Console.WriteLine(product.Name + " " + product.Code);
+
+/*
+    This code produces the following output:
+    apple 9
+    orange 4
+    lemon 12
 */
 ```
