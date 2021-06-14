@@ -1,1 +1,5 @@
 # til
+
+//todo
+String
+Random
