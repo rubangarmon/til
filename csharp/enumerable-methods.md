@@ -11,8 +11,8 @@ All examples and information were taken from [Microsoft documentation](https://d
 | Projection     | [Select](#select), [SelectMany](#selectmany)                                                                                                                            |
 | Aggregation    | [Aggregate](#aggregate), [Averange](#averange), [Count](#count-and-longcount), [LongCount](#count-and-longcount), [Max](#max-and-min), [Min](#max-and-min), [Sum](#sum) |
 | Quantifiers    | [All](#all), [Any](#any), [Contains](#contains)                                                                                                                         |
-| Elements       | ElementAt, ElementAtOrDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault                                                                      |
-| Set            | Distinct, Except, Intersect, Union                                                                                                                                      |
+| Elements       | [ElementAt](#elementat), [ElementAtOrDefault](#elementatordeafult), First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault                                 |
+| Set            | [Distinct](#distinct), [Except](#except), [Intersect](#interset), [Union](#union)                                                                                       |
 | Partitioning   | Skip, SkipWhile, Take, TakeWhile                                                                                                                                        |
 | Concatenation  | Contact, Zip                                                                                                                                                            |
 | Equality       | SequenceEqual                                                                                                                                                           |
@@ -1243,7 +1243,6 @@ Console.WriteLine(
 */
 ```
 
-
 ## Distinct
 
 The Distinct extension method returns a new collection of unique elements from the given collection.
@@ -1269,9 +1268,8 @@ Three
 3
 4
 5
-*/    
+*/
 ```
-
 
 Using IEquatable interface
 
@@ -1331,5 +1329,113 @@ foreach (var product in noduplicates)
     apple 9
     orange 4
     lemon 12
+*/
+```
+
+## Except
+
+The Except() method requires two collections. It returns a new collection with elements from the first collection which do not exist in the second collection (parameter collection).
+
+```csharp
+IList<string> strList1 = new List<string>(){"One", "Two", "Three", "Four", "Five" };
+IList<string> strList2 = new List<string>(){"Four", "Five", "Six", "Seven", "Eight"};
+
+var result = strList1.Except(strList2);
+
+foreach(string str in result)
+        Console.WriteLine(str);
+
+/// output
+// One
+// Two
+// Three
+```
+
+using IEquatable interface
+
+```csharp
+public class ProductA: IEquatable<ProductA>
+{
+    public string Name { get; set; }
+    public int Code { get; set; }
+
+    public bool Equals(ProductA other)
+    {
+        if (other is null)
+            return false;
+
+        return this.Name == other.Name && this.Code == other.Code;
+    }
+
+    public override bool Equals(object obj) => Equals(obj as ProductA);
+    public override int GetHashCode() => (Name, Code).GetHashCode();
+}
+
+////
+
+ProductA[] fruits1 = { new ProductA { Name = "apple", Code = 9 },
+                       new ProductA { Name = "orange", Code = 4 },
+                        new ProductA { Name = "lemon", Code = 12 } };
+
+ProductA[] fruits2 = { new ProductA { Name = "apple", Code = 9 } };
+
+//Get all the elements from the first array
+//except for the elements from the second array.
+
+IEnumerable<ProductA> except =
+    fruits1.Except(fruits2);
+
+foreach (var product in except)
+    Console.WriteLine(product.Name + " " + product.Code);
+
+/*
+  This code produces the following output:
+
+  orange 4
+  lemon 12
+*/
+```
+
+## Interset
+
+A sequence that contains the elements that form the set intersection of two sequences.
+
+```csharp
+IList<string> strList1 = new List<string>() { "One", "Two", "Three", "Four", "Five" };
+IList<string> strList2 = new List<string>() { "Four", "Five", "Six", "Seven", "Eight"};
+
+var result = strList1.Intersect(strList2);
+
+foreach(string str in result)
+        Console.WriteLine(str);
+
+// output
+/*
+Four
+Five
+*/
+```
+
+## Union
+
+The Union extension method requires two collections and returns a new collection that includes distinct elements from both the collections. Consider the following example.
+
+```csharp
+IList<string> strList1 = new List<string>() { "One", "Two", "three", "Four" };
+IList<string> strList2 = new List<string>() { "Two", "THREE", "Four", "Five" };
+
+var result = strList1.Union(strList2);
+
+foreach(string str in result)
+        Console.WriteLine(str);
+
+// output
+/*
+One
+Two
+three
+THREE
+Four
+Five
 */
 ```
