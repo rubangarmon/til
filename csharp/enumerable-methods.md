@@ -13,9 +13,9 @@ All examples and information were taken from [Microsoft documentation](https://d
 | Quantifiers    | [All](#all), [Any](#any), [Contains](#contains)                                                                                                                         |
 | Elements       | [ElementAt](#elementat), [ElementAtOrDefault](#elementatordeafult), First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault                                 |
 | Set            | [Distinct](#distinct), [Except](#except), [Intersect](#interset), [Union](#union)                                                                                       |
-| Partitioning   | Skip, SkipWhile, Take, TakeWhile                                                                                                                                        |
-| Concatenation  | Contact, Zip                                                                                                                                                            |
-| Equality       | SequenceEqual                                                                                                                                                           |
+| Partitioning   | [Skip & SkipLast](#skip--skiplast), [SkipWhile](#skipwhile), Take & TakeLast, [TakeWhile](#takewhile)                                                                   |
+| Concatenation  | [Concat](#concat), [Zip](#zip)                                                                                                                                          |
+| Equality       | [SequenceEqual](#sequenceequal)                                                                                                                                         |
 | Generation     | DefaultEmpty, Empty, Range, Repeat                                                                                                                                      |
 | Conversion     | AsEnumerable, AsQueryable, Cast, ToArray, ToDictionary, ToList                                                                                                          |
 
@@ -1438,4 +1438,214 @@ THREE
 Four
 Five
 */
+```
+
+## Skip & SkipLast
+
+The Skip() method skips the specified number of element starting from first element and returns rest of the elements.
+
+````csharp
+var strList = new List<string>(){ "One", "Two", "Three", "Four", "Five" };
+var newList = strList.Skip(2);
+foreach(var i in newList){
+    Console.WriteLine(str);
+}
+/*
+    Three
+    Four
+    Five
+*/
+
+The SkipLast() returns a new enumerable collection that contains the elements from source with the last count elements of the source collection omitted.
+
+```csharp
+var numberList = new List<int>() { 23, 34, 44, 45, 56, 566, 2034 };
+var newList = numberList.SkipLast(3);
+foreach (var item in newList)
+{
+    Console.WriteLine(item);
+}
+
+/*
+    23
+    34
+    44
+    45
+*/
+```
+
+
+## SkipWhile
+
+Skips elements based on a condition until an element does not satisfy the condition. If the first element itself doesn't satisfy the condition, it then skips 0 elements and returns all the elements in the sequence. FIRST ELEMENT ALWAYS HAS TO BE TRUE.
+
+```csharp
+var strList = new List<string>() { "One", "Two", "Three", "Four", "Five", "Six" };
+
+var resultList = strList.SkipWhile(s => s.Length < 4);
+foreach(string str in resultList)
+    Console.WriteLine(str);
+/*
+    Three
+    Four
+    Five
+    Six
+*/
+
+````
+
+Sorting for the first element to be true.
+
+```csharp
+int[] grades = { 59, 82, 70, 56, 92, 98, 85 };
+
+IEnumerable<int> lowerGrades =
+    grades
+    .OrderByDescending(grade => grade)
+    .SkipWhile(grade => grade >= 80);
+
+Console.WriteLine("All grades below 80:");
+foreach (int grade in lowerGrades)
+{
+    Console.WriteLine(grade);
+}
+
+/*
+ This code produces the following output:
+
+ All grades below 80:
+ 70
+ 59
+ 56
+*/
+```
+
+## Take
+
+Returns a specified number of contiguous elements from the start of the sequence.
+
+```csharp
+var strList = new List<string>() { "One", "Two", "Three", "Four", "Five" };
+var newList = strList.Take(2);
+
+foreach(var str in newList)
+    Console.WriteLine(str);
+
+/*
+    One
+    Two
+*/
+```
+
+# TakeWhile
+
+Returns elements from a sequence as long as a specified condition is true, and then skips the remaining elements.
+
+```csharp
+string[] fruits = {"apple", "banana", "mango", "orange", "passionfruit", "grape" };
+
+IEnumerable<string> query = fruits.TakeWhile(fruit => String.Compare("orange", fruit, true) != 0);
+
+foreach(string fruit in query){
+    Console.WriteLine(fruit);
+};
+
+/*
+    apple
+    banana
+    mango
+*/
+
+```
+
+using index
+
+```csharp
+string[] fruits = { "apple", "passionfruit", "banana", "mango",
+                      "orange", "blueberry", "grape", "strawberry" };
+
+IEnumerable<string> query =
+    fruits.TakeWhile((fruit, index) => fruit.Length >= index);
+
+foreach (string fruit in query)
+{
+    Console.WriteLine(fruit);
+}
+
+/*
+ This code produces the following output:
+
+ apple
+ passionfruit
+ banana
+ mango
+ orange
+ blueberry
+*/
+```
+
+## Concat
+
+The Concat() method appends two sequences of the same type and returns a new sequence (collection).
+
+```csharp
+    IList<string> collection1 = new List<string>() { "One", "Two", "Three" };
+    IList<string> collection2 = new List<string>() { "Five", "Six"};
+
+    var collection3 = collection1.Concat(collection2);
+
+    foreach (string str in collection3)
+        Console.WriteLine(str);
+    /*
+        One
+        Two
+        Three
+        Five
+        Six
+    */
+```
+
+## Zip
+
+Applies a specified function to the corresponding elements of two sequences, producing a sequence of the results.
+
+```csharp
+int[] numbers = { 1, 2, 3, 4 };
+string[] words = { "one", "two", "three" };
+
+var numbersAndWords = numbers.Zip(words, (first, second) => first + " " + second);
+
+foreach(var item in numbersAndWords) {
+    Console.WriteLine(item);
+}
+
+/*
+    1 one
+    2 two
+    3 three
+*/
+```
+
+## SequenceEqual
+
+Checks whether the number of elements, value of each element and order of elements in two collections are equal or not.
+If the collection contains elements of primitive data types then it compares the values and number of elements, whereas collection with complex type elements, checks the references of the objects. So, if the objects have the same reference then they considered as equal otherwise they are considered not equal.
+
+```csharp
+Student std = new Student() { StudentID = 1, StudentName = "Bill" };
+
+IList<Student> studentList1 = new List<Student>(){ std };
+
+IList<Student> studentList2 = new List<Student>(){ std };
+
+bool isEqual = studentList1.SequenceEqual(studentList2); // returns true
+
+Student std1 = new Student() { StudentID = 1, StudentName = "Bill" };
+Student std2 = new Student() { StudentID = 1, StudentName = "Bill" };
+
+IList<Student> studentList3 = new List<Student>(){ std1};
+
+IList<Student> studentList4 = new List<Student>(){ std2 };
+
+isEqual = studentList3.SequenceEqual(studentList4);// returns false
 ```
