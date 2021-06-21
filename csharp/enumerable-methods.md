@@ -16,8 +16,8 @@ All examples and information were taken from [Microsoft documentation](https://d
 | Partitioning   | [Skip & SkipLast](#skip--skiplast), [SkipWhile](#skipwhile), Take & TakeLast, [TakeWhile](#takewhile)                                                                   |
 | Concatenation  | [Concat](#concat), [Zip](#zip)                                                                                                                                          |
 | Equality       | [SequenceEqual](#sequenceequal)                                                                                                                                         |
-| Generation     | DefaultEmpty, Empty, Range, Repeat                                                                                                                                      |
-| Conversion     | AsEnumerable, AsQueryable, Cast, ToArray, ToDictionary, ToList                                                                                                          |
+| Generation     | [DefaultEmpty](#defaultifempty), [Empty](#empty), [Range](#range), [Repeat](#repeat)                                                                                    |
+| Conversion     | [AsEnumerable](#asenumerable), AsQueryable, Cast, ToArray, ToDictionary, ToList                                                                                         |
 
 ## Where
 
@@ -1648,4 +1648,210 @@ IList<Student> studentList3 = new List<Student>(){ std1};
 IList<Student> studentList4 = new List<Student>(){ std2 };
 
 isEqual = studentList3.SequenceEqual(studentList4);// returns false
+```
+
+## DefaultIfEmpty
+
+Returns the elements of an IEnumerable<T>, or a default valued singleton collection if the sequence is empty.
+
+```csharp
+class Pet{
+    public string Name {get; set;}
+    public int Age {get; set;}
+}
+
+public static void DefaultIfEmptyEx2()
+{
+    Pet defaultPet = new Pet {Name = "Default Pet", Age = 0 };
+
+    List<Pet> pet1 =
+        newList<Pet> {
+            new Pet { Name="Barley", Age=8 },
+            new Pet { Name="Boots", Age=4 },
+            new Pet { Name="Whiskers", Age=1 } };
+
+    foreach (Pet pet in pets1.DefaultIfEmpty(defaultPet))
+    {
+        Console.WriteLine("Name: {0}", pet.Name);
+    }
+
+    List<Pet> pets2 = new List<Pet>();
+
+    foreach (Pet pet in pets2.DefaultIfEmpty(defaultPet))
+    {
+        Console.WriteLine("\nName: {0}", pet.Name);
+    }
+
+/*
+    This code produces the following output:
+
+ Name: Barley
+ Name: Boots
+ Name: Whiskers
+
+ Name: Default Pet
+
+*/
+
+}
+
+```
+
+## Empty
+
+Returns an empty collection
+
+```csharp
+var emptyCollection1 = Enumerable.Empty<string>();
+var emptyCollection2 = Enumerable.Empty<Student>();
+
+Console.WriteLine("Count: {0}", emptyCollection1.Count());
+Console.WriteLine("Type: {0}", emptyCollection1.GetType().Name);
+
+Console.WriteLine("Count: {0}", emptyCollection2.Count());
+Console.WriteLine("Type: {0}", emptyCollection2.GetType().Name);
+
+/*
+    Count: 0
+    Type: String[]
+    Count: 0
+    Type: Student[]
+*/
+```
+
+## Range
+
+Generates collection of IEnumerable<T> type with specified number of elements with sequential values, starting from first element.
+
+```csharp
+var intCollection = Enumerable.Range(10, 10);
+Console.WriteLine("Total Count: {0} ", intCollection.Count());
+
+for(int i = 0; i < intCollection.Count(); i++) {
+    Console.WriteLine("Value at index {0} : {1}", i, intCollection.ElementAt(i));
+}
+
+/*
+    Total Count: 10
+Value at index 0 : 10
+Value at index 1 : 11
+Value at index 2 : 12
+Value at index 3 : 13
+Value at index 4 : 14
+Value at index 5 : 15
+Value at index 6 : 16
+Value at index 7 : 17
+Value at index 8 : 18
+Value at index 9 : 19
+*/
+```
+
+Another example
+
+```csharp
+// Generate a sequence of integers from 1 to 10
+// and then select their squares.
+IEnumerable<int> squares = Enumerable.Range(1, 10).Select(x => x * x);
+
+foreach (int num in squares)
+{
+    Console.WriteLine(num);
+}
+
+/*
+ This code produces the following output:
+
+ 1
+ 4
+ 9
+ 16
+ 25
+ 36
+ 49
+ 64
+ 81
+ 100
+*/
+```
+
+## Repeat
+
+Generates a collection of IEnumerable<T> type with specified number of elements and each element contains same specifed value.
+
+```csharp
+IEnumerable<string> strings =
+    Enumerable.Repeat("I like programming.", 15);
+
+foreach (String str in strings)
+{
+    Console.WriteLine(str);
+}
+
+/*
+ This code produces the following output:
+
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+ I like programming.
+*/
+```
+
+## AsEnumerable
+
+Returns the input sequence as IEnumerable<t>. The following code example demonstrates how to use AsEnumerable<TSource>(IEnumerable<TSource>) to hide a type's custom _`Where`_ method whe the standard query operator implementation is desired.
+
+```csharp
+// Custom class.
+class Clump<T> : List<T>
+{
+    // Custom implementation of Where().
+    public IEnumerable<T> Where(Func<T, bool> predicate)
+    {
+        Console.WriteLine("In Clump's implementation of Where().");
+        return Enumerable.Where(this, predicate);
+    }
+}
+
+static void AsEnumerableEx1()
+{
+    // Create a new Clump<T> object.
+    Clump<string> fruitClump =
+        new Clump<string> { "apple", "passionfruit", "banana",
+            "mango", "orange", "blueberry", "grape", "strawberry" };
+
+    // First call to Where():
+    // Call Clump's Where() method with a predicate.
+    IEnumerable<string> query1 =
+        fruitClump.Where(fruit => fruit.Contains("o"));
+
+    Console.WriteLine("query1 has been created.\n");
+
+    // Second call to Where():
+    // First call AsEnumerable() to hide Clump's Where() method and thereby
+    // force System.Linq.Enumerable's Where() method to be called.
+    IEnumerable<string> query2 =
+        fruitClump.AsEnumerable().Where(fruit => fruit.Contains("o"));
+
+    // Display the output.
+    Console.WriteLine("query2 has been created.");
+}
+
+// This code produces the following output:
+//
+// In Clump's implementation of Where().
+// query1 has been created.
+//
+// query2 has been created.
 ```
