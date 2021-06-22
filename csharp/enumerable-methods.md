@@ -17,7 +17,7 @@ All examples and information were taken from [Microsoft documentation](https://d
 | Concatenation  | [Concat](#concat), [Zip](#zip)                                                                                                                                          |
 | Equality       | [SequenceEqual](#sequenceequal)                                                                                                                                         |
 | Generation     | [DefaultEmpty](#defaultifempty), [Empty](#empty), [Range](#range), [Repeat](#repeat)                                                                                    |
-| Conversion     | [AsEnumerable](#asenumerable), AsQueryable, Cast, ToArray, ToDictionary, ToList                                                                                         |
+| Conversion     | [AsEnumerable](#asenumerable), [AsQueryable](#asqueryable), [Cast](#cast), [ToArray, ToDictionary, ToList](#toarray-tolist-todictionary)                                |
 
 ## Where
 
@@ -1854,4 +1854,118 @@ static void AsEnumerableEx1()
 // query1 has been created.
 //
 // query2 has been created.
+```
+
+## AsQueryable
+
+Converts IEnumerable to IQueryable, to simulate a remote query provider.
+
+```csharp
+List<int> grades = new List<int> { 78, 92, 100, 37, 81 };
+
+// Convert the List to an IQueryable<int>.
+IQueryable<int> iqueryable = grades.AsQueryable();
+
+// Get the Expression property of the IQueryable object.
+System.Linq.Expressions.Expression expressionTree =
+    iqueryable.Expression;
+
+Console.WriteLine("The NodeType of the expression tree is: "
+    + expressionTree.NodeType.ToString());
+Console.WriteLine("The Type of the expression tree is: "
+    + expressionTree.Type.Name);
+
+/*
+    This code produces the following output:
+
+    The NodeType of the expression tree is: Constant
+    The Type of the expression tree is: EnumerableQuery`1
+*/
+```
+
+## Cast
+
+Cast does the same thing as AsEnumerable<T>. It cast the source object into IEnumerable<T>.
+
+```csharp
+class Program
+{
+
+    static void ReportTypeProperties<T>(T obj)
+    {
+        Console.WriteLine("Compile-time type: {0}", typeof(T).Name);
+        Console.WriteLine("Actual type: {0}", obj.GetType().Name);
+    }
+
+    static void Main(string[] args)
+    {
+        Student[] studentArray = {
+                new Student() { StudentID = 1, StudentName = "John", Age = 18 } ,
+                new Student() { StudentID = 2, StudentName = "Steve",  Age = 21 } ,
+                new Student() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+                new Student() { StudentID = 4, StudentName = "Ram" , Age = 20 } ,
+                new Student() { StudentID = 5, StudentName = "Ron" , Age = 31 } ,
+            };
+
+        ReportTypeProperties( studentArray);
+        ReportTypeProperties(studentArray.Cast<Student>());
+    }
+}
+
+/*
+Compile-time type: Student[]
+Actual type: Student[]
+Compile-time type: IEnumerable`1
+Actual type: Student[]
+Compile-time type: IEnumerable`1
+Actual type: Student[]
+Compile-time type: IEnumerable`1
+Actual type: Student[]
+*/
+```
+
+## ToArray(), ToList(), ToDictionary()
+
+As the name suggests, ToArray(), ToList() and ToDictionary() methods convert a source object into an array, list or dictionary.
+
+```csharp
+class Package
+{
+    public string Company { get; set; }
+    public double Weight { get; set; }
+    public long TrackingNumber { get; set; }
+}
+
+public static void ToDictionaryEx1()
+{
+    List<Package> packages =
+        new List<Package>
+            { new Package { Company = "Coho Vineyard", Weight = 25.2, TrackingNumber = 89453312L },
+              new Package { Company = "Lucerne Publishing", Weight = 18.7, TrackingNumber = 89112755L },
+              new Package { Company = "Wingtip Toys", Weight = 6.0, TrackingNumber = 299456122L },
+              new Package { Company = "Adventure Works", Weight = 33.8, TrackingNumber = 4665518773L } };
+
+    // Create a Dictionary of Package objects,
+    // using TrackingNumber as the key.
+    Dictionary<long, Package> dictionary =
+        packages.ToDictionary(p => p.TrackingNumber);
+
+    foreach (KeyValuePair<long, Package> kvp in dictionary)
+    {
+        Console.WriteLine(
+            "Key {0}: {1}, {2} pounds",
+            kvp.Key,
+            kvp.Value.Company,
+            kvp.Value.Weight);
+    }
+}
+
+/*
+ This code produces the following output:
+
+ Key 89453312: Coho Vineyard, 25.2 pounds
+ Key 89112755: Lucerne Publishing, 18.7 pounds
+ Key 299456122: Wingtip Toys, 6 pounds
+ Key 4665518773: Adventure Works, 33.8 pounds
+*/
 ```
